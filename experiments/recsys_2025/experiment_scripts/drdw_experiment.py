@@ -16,7 +16,7 @@ from cornac.models import D_RDW
 
 # Load data and set up environment
 def main():
-    dataset_name = 'nemig'
+    dataset_name = 'ebnerd'
     
     input_path = f'./{dataset_name}_results'
     # Update the path for different dataset.
