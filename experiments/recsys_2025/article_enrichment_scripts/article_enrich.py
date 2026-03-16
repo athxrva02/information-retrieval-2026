@@ -40,8 +40,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
 ## Select the dataset configuration you want to use:
-# import config_ebnerd as config
-import config_nemig as config
+import config_ebnerd as config
+# import config_nemig as config
 # import config_mind as config
 
 # NOTE:

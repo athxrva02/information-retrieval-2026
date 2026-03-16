@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from requests.exceptions import RequestException
 
+from .config import headers
 
 @retry(
     stop=stop_after_attempt(5),  # Retry up to 5 attempts
@@ -28,7 +29,7 @@ def get_english_label(search_string, language):
         "language": language
     }
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()  # Raise an exception for 4xx or 5xx status codes
         data = response.json()
         return data['search'][0]['label'] if data.get('search') else None

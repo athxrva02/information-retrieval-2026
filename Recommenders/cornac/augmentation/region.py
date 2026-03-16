@@ -9,6 +9,7 @@ from requests.exceptions import JSONDecodeError
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+from .config import headers
 
 def make_request_with_retries(url, retries=3, backoff_factor=1.0):
     """
@@ -20,7 +21,7 @@ def make_request_with_retries(url, retries=3, backoff_factor=1.0):
     """
     for attempt in range(retries):
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10, headers=headers)
             if response.status_code == 200:
                 try:
                     # Attempt to parse JSON to ensure it's valid
@@ -99,7 +100,7 @@ def get_english_label(search_string, language):
         "language": language
     }
     try:
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=10, headers=headers)
         response.raise_for_status()
         data = response.json()
         if data.get('search'):

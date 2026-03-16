@@ -12,23 +12,23 @@ import sys
 
 
 # For Mind and NeMig datasets, update the path to the corresponding {datasetname_results} folder
-dataset_result_folder =  './nemig_results'
+dataset_result_folder =  './ebnerd_results'
 # Load precomputed embeddings for Mind and NeMig datasets
-saved_emb_path = os.path.join(dataset_result_folder,  "news_embeddings.pkl")
-with open(saved_emb_path, "rb") as f:
-    embedding = pickle.load(f)  # Load the dictionary
+# saved_emb_path = os.path.join(dataset_result_folder,  "news_embeddings.pkl")
+# with open(saved_emb_path, "rb") as f:
+#     embedding = pickle.load(f)  # Load the dictionary
 
 
 # ----------------------------------------
 # For EB-Nerd dataset: load the article embeddings provided by the dataset.
 # Uncomment and update paths as needed
-# input_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ebnerd_input')
-# articles_emb_path =  os.path.join(input_folder, 'xlm_roberta_base.parquet')
-# articles_df_raw = pd.read_parquet(articles_emb_path)
-# print(articles_df_raw.dtypes)
-# embedding = articles_df_raw.rename(columns={'article_id': 'id', 'FacebookAI/xlm-roberta-base': 'embedding'})
-# embedding['id'] = embedding['id'].astype(str)
-# embedding['embedding'] = embedding['embedding'].apply(lambda x: x.tolist())
+input_folder = './ebnerd_input'
+articles_emb_path =  os.path.join(input_folder, 'xlm_roberta_base.parquet')
+articles_df_raw = pd.read_parquet(articles_emb_path)
+print(articles_df_raw.dtypes)
+embedding = articles_df_raw.rename(columns={'article_id': 'id', 'FacebookAI/xlm-roberta-base': 'embedding'})
+embedding['id'] = embedding['id'].astype(str)
+embedding['embedding'] = embedding['embedding'].apply(lambda x: x.tolist())
 
 
 

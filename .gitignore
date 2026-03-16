@@ -1,6 +1,8 @@
 dataset
 *.parquet
-
+ebnerd_input
+ebnerd_results
 
 .venv
 .idea
+__pycache__

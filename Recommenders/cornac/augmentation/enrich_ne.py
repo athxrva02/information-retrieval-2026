@@ -9,6 +9,8 @@ import random
 import hashlib
 from threading import Lock
 
+from .config import headers
+
 
 class WikidataQuery:
     """
@@ -18,6 +20,8 @@ class WikidataQuery:
     def __init__(self, url: str = 'https://query.wikidata.org/sparql', pool_maxsize: int = 50, pool_block: bool = True):
         self.url = url
         self.session = requests.Session()
+        self.session.headers.update(headers)
+
         adapter = HTTPAdapter(pool_connections=pool_maxsize, pool_maxsize=pool_maxsize, pool_block=pool_block)
         self.session.mount('https://', adapter)
 

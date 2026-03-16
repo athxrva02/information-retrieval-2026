@@ -7,7 +7,7 @@ import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, current_dir)
 
-input_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'ebnerd_input')
+input_folder = './ebnerd_input'
 
 # Load EB-NERD dataset
 articles_path = os.path.join(input_folder, 'articles.parquet')

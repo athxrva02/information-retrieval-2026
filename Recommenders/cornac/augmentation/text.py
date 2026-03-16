@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+from .config import headers
 
 # Set the end of the main content of the articles. Delete the ads at the end of the news site.
 def remove_siblings_after_tag(soup, tag_name, text):
@@ -38,7 +39,7 @@ def find_sentences_with_text(soup, text):
 def get_article_text_from_url(url):
     try:
         # Send a GET request to get web content
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()  # Check for request errors (e.g., 404 or 500)
 
 
