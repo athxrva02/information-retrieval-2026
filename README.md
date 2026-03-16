@@ -1,4 +1,4 @@
-# Information Retrieval 2026
+# Information Retrieval 2026 - Group 36
 
 Reproduction and experimentation repository for **D-RDW: Diversity-Driven Random Walks for News Recommender Systems**, presented at RecSys 2025 (Li, Heitz, Inel, Bernstein — University of Zurich).
 
