@@ -15,9 +15,9 @@ from cornac.datasets import mind as mind
 from collections import defaultdict
 from tqdm import tqdm
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "6"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-save_path = "your_folder_to_save_model_recommendation_results"
+save_path = "./experiment_ebnerd_random_results/RandomModel/"
 file_path = os.path.join(save_path, "recommendations.pkl")
 
 print(f"save_path:{save_path}")
@@ -25,21 +25,23 @@ print(f"save_path:{save_path}")
 with open(file_path, 'rb') as file:
     model_recommendations = pickle.load(file)
 
+results_dir = './ebnerd_results'
+
 impression_items_df = pd.read_csv(
-    "article_pool.csv", dtype ={'iid': str})
+    os.path.join(results_dir, "article_pool.csv"), dtype ={'iid': str})
 impression_iid_list = impression_items_df['iid'].tolist()
 
-with open('combined_user_history.json', 'r') as file:
+with open(os.path.join(results_dir, 'combined_user_history.json'), 'r') as file:
     user_history = json.load(file)
 
 # Read path where the train uir and test uir are saved. For different models, the input files may be different
 ## Check the corresponding model experiment script.
 
 feedback_train = mind.load_feedback(
-    fpath="uir_impression_train.csv")
+    fpath=os.path.join(results_dir, "uir_impression_train.csv"))
 
 feedback_test = mind.load_feedback(
-    fpath="uir_impression_test.csv")
+    fpath=os.path.join(results_dir, "uir_impression_test.csv"))
 
 mind_ratio_split = BaseMethod.from_splits(
     train_data=feedback_train,

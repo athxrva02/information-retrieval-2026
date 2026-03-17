@@ -43,15 +43,15 @@ class WordVecs:
 
 # ---------------------------------------
 # For Eb_Nerd,  FastText Danish vector (300-dimensional)
-# input_folder = './ ebnerd _input' 
-# model_path =  os.path.join(input_folder,'cc.da.300.bin') # Adjust this path to your actual file location
-# model = FastText.load_fasttext_format(model_path)
-
-# ---------------------------------------
-#  For NeMig, use FastText German 300d vector, refer to https://fasttext.cc/docs/en/crawl-vectors.html
-input_folder = './nemig_input'
-model_path =  os.path.join(input_folder,'cc.de.300.bin')  # Adjust this path to your actual file location
+input_folder = './ ebnerd _input'
+model_path =  os.path.join(input_folder,'cc.da.300.bin') # Adjust this path to your actual file location
 model = FastText.load_fasttext_format(model_path)
+
+# # ---------------------------------------
+# #  For NeMig, use FastText German 300d vector, refer to https://fasttext.cc/docs/en/crawl-vectors.html
+# input_folder = './nemig_input'
+# model_path =  os.path.join(input_folder,'cc.de.300.bin')  # Adjust this path to your actual file location
+# model = FastText.load_fasttext_format(model_path)
 
 
 # Step 2: Function to tokenize the sentence into words (consider punctuation as separate tokens)
@@ -70,7 +70,7 @@ def word_tokenize(sent):
     else:
         return []
 
-dataset_result_folder =  './nemig_results'
+dataset_result_folder =  './ebnerd_results'
 incompelete_article_path = os.path.join(dataset_result_folder, "cleaned_articles.csv")
 df = pd.read_csv(incompelete_article_path, usecols=["id", "title"])
 article_title = dict(zip(df["id"], df["title"]))
