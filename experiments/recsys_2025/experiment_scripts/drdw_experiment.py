@@ -140,6 +140,15 @@ def main():
         .join(pd.Series(Item_sentiment).to_frame('sentiment'), how='outer')
     )
 
+    # Fill missing items (cold-start/augmented items not in enrichment JSONs) with defaults
+    all_item_indices = pd.RangeIndex(len(rs.global_iid_map))
+    article_feature_dataframe = article_feature_dataframe.reindex(all_item_indices)
+    article_feature_dataframe['category'] = article_feature_dataframe['category'].fillna('unknown')
+    article_feature_dataframe['sentiment'] = article_feature_dataframe['sentiment'].fillna(0.0)
+    article_feature_dataframe['entities'] = article_feature_dataframe['entities'].apply(
+        lambda x: x if isinstance(x, dict) else {}
+    )
+
     # Set up the D-RDW model
     ## for Nemig, maxHops = 5 has better result
     ## for EB_NeRD and MIND,  maxHops = 3
