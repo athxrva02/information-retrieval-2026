@@ -307,6 +307,154 @@ python experiments/recsys_2025/evaluation_scripts/check_accuracy/compute_auc.py
 
 ---
 
+## 6. Baseline Results (Paper Default NTD)
+
+Results from running D-RDW with the default paper NTD on EB-NeRD small.
+
+### Runtime
+
+| Phase | Time | Notes |
+|-------|------|-------|
+| Training | 1.8s | Graph construction only |
+| Evaluation (ranking) | ~77 min | 15,342 test users @ ~3.3 users/s |
+| AUC computation | ~10 min | Pairwise score comparisons |
+
+### Metrics
+
+| Metric | Value |
+|--------|-------|
+| Recall@20 | 0.0056 |
+| AUC | 0.5542 |
+
+### Output Files
+
+```
+experiment_ebnerd_drdw_results/
+├── CornacExp-YYYY-MM-DD_HH-MM-SS.log
+└── D_RDW/
+    ├── recommendations.pkl          # user_id → ranked item indices
+    ├── item_scores.pkl              # user_id → item scores
+    └── item_scores_mapped_indices.pkl
+```
+
+---
+
+## 7. Running NTD Experiments
+
+To test different Normative Target Distributions without re-training, use the NTD runner script.
+
+### 7.1 How NTDs Work in D-RDW
+
+The NTD only affects the **ranking/evaluation** phase — not training. The graph construction
+(`fit()`) builds the bipartite graph and random walk model once. The NTD is applied during `rank()`
+to guide the ILP sampling of candidate items. This means:
+
+- **Graph construction:** Run once (~2s), reuse for all NTD experiments
+- **Ranking per NTD:** ~77 min per configuration (15,342 users)
+
+### 7.2 NTD Config Format
+
+NTD configurations are JSON files stored in
+`experiments/recsys_2025/experiment_scripts/ntd_configs/`. Format:
+
+```json
+{
+  "name": "experiment_name",
+  "description": "What this NTD tests",
+  "target_distribution": {
+    "sentiment": {"type": "continuous", "distr": [
+      {"min": -1, "max": 0, "prob": 0.5},
+      {"min": 0, "max": 1.01, "prob": 0.5}
+    ]},
+    "entities": {"type": "parties", "distr": [
+      {"description": "only mention", "contain": ["Party A", "Party B"], "prob": 0.3},
+      {"description": "no parties", "contain": [], "prob": 0.7}
+    ]}
+  },
+  "model_params": {
+    "maxHops": 3,
+    "targetSize": 20,
+    "rankingType": "graph_coloring",
+    "rankingObjectives": "category",
+    "sampleObjective": "rdw_score"
+  }
+}
+```
+
+`model_params` is optional — defaults from the paper are used if omitted.
+
+### 7.3 Available Example Configs
+
+| Config | File | Description |
+|--------|------|-------------|
+| Paper default | `paper_default.json` | Original NTD from D-RDW paper |
+| Uniform sentiment | `uniform_sentiment.json` | Equal 25% per sentiment bin |
+| More opposition | `more_opposition.json` | 30% opposition vs 10% government exposure |
+
+### 7.4 Running Experiments
+
+```bash
+# Run the paper's default NTD:
+python experiments/recsys_2025/experiment_scripts/drdw_ntd_runner.py --default
+
+# Run a specific config:
+python experiments/recsys_2025/experiment_scripts/drdw_ntd_runner.py \
+  --config experiments/recsys_2025/experiment_scripts/ntd_configs/uniform_sentiment.json
+
+# Run ALL configs in a directory (data loaded once, configs run sequentially):
+python experiments/recsys_2025/experiment_scripts/drdw_ntd_runner.py \
+  --config-dir experiments/recsys_2025/experiment_scripts/ntd_configs/
+
+# List available configs:
+python experiments/recsys_2025/experiment_scripts/drdw_ntd_runner.py \
+  --list-configs experiments/recsys_2025/experiment_scripts/ntd_configs/
+```
+
+### 7.5 Result Management
+
+Results are saved to `./experiment_results/{config_name}/D_RDW/` with a copy of the config:
+
+```
+experiment_results/
+├── paper_default/
+│   ├── ntd_config.json              # config used (for reproducibility)
+│   └── D_RDW/
+│       ├── recommendations.pkl
+│       ├── item_scores.pkl
+│       └── item_scores_mapped_indices.pkl
+├── uniform_sentiment/
+│   ├── ntd_config.json
+│   └── D_RDW/
+│       └── ...
+└── more_opposition/
+    ├── ntd_config.json
+    └── D_RDW/
+        └── ...
+```
+
+Results are **never overwritten** — each config name maps to its own directory. The saved
+`ntd_config.json` ensures results are always traceable to the exact configuration used.
+
+### 7.6 Parallelising Across Terminals
+
+The ranking code has shared mutable state that prevents thread-level parallelism within a single
+process. However, you can run separate configs in **different terminal sessions** safely:
+
+```bash
+# Terminal 1:
+python experiments/recsys_2025/experiment_scripts/drdw_ntd_runner.py \
+  --config ntd_configs/uniform_sentiment.json
+
+# Terminal 2:
+python experiments/recsys_2025/experiment_scripts/drdw_ntd_runner.py \
+  --config ntd_configs/more_opposition.json
+```
+
+Each terminal loads data independently (~2 min overhead per terminal), but the ranking runs
+fully in parallel. On a machine with enough RAM (~8GB per process), this scales linearly.
+
+---
+
 ## Troubleshooting
 
 ### Eigen compilation error on macOS
@@ -323,6 +471,13 @@ The enrichment JSON files (`sentiment.json`, `category.json`, `party.json`) only
 instead of ~19k. This happens when `article_enrich.py` was run with the `df = df[:10]` test limit.
 Comment out that line and re-run the enrichment.
 
+### D-RDW `KeyError` with missing item indices
+
+582 items in the augmented graph don't have enrichment data (cold-start items). The experiment
+script fills these with defaults (category=`"unknown"`, sentiment=`0.0`, entities=`{}`). If you
+see this error with the original `drdw_experiment.py`, use `drdw_ntd_runner.py` which handles
+this automatically.
+
 ### `requirements.txt` encoding error
 
 The file is UTF-16 encoded with Windows line endings. Convert it:
@@ -332,6 +487,12 @@ iconv -f UTF-16 -t UTF-8 requirements.txt | grep -v "^-e file:///" > requirement
 pip install -r requirements_fixed.txt
 ```
 
+### Wikidata SPARQL 400 errors during enrichment
+
+Entity names containing quotes (e.g., `Juan Carlos'`) cause malformed SPARQL queries. A patch
+has been applied to `Recommenders/cornac/augmentation/enrich_ne.py` to escape quotes. These
+errors are non-fatal — the enrichment continues, but affected entities get empty data.
+
 ### HuggingFace rate limiting
 
 If you see slow downloads or 429 errors during enrichment, set a HuggingFace token:
@@ -339,47 +500,3 @@ If you see slow downloads or 429 errors during enrichment, set a HuggingFace tok
 ```bash
 export HF_TOKEN=your_token_here
 ```
-
-
-
-# Test 1
-[D_RDW] Evaluation started!
-Ranking: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 15342/15342 [1:17:28<00:00,  3.30it/s]
-Recommendations saved to ./experiment_ebnerd_drdw_results/D_RDW/recommendations.pkl
-Item scores saved to ./experiment_ebnerd_drdw_results/D_RDW/item_scores.pkl
-Item scores mapped index saved to ./experiment_ebnerd_drdw_results/D_RDW/item_scores_mapped_indices.pkl
-
-TEST:
-...
-      | Recall@20 | Train (s) |  Test (s)
------ + --------- + --------- + ---------
-D_RDW |    0.0056 |    1.7707 | 4648.4456
-
-
-(venv) atharva@Atharvas-Mac-mini information-retrieval-2026 % python experiments/recsys_2025/evaluation_scripts/check_accuracy/compute_auc.py
-
-rating_threshold = 0.5
-exclude_unknowns = False
----
-Training data:
-Number of users = 18827
-Number of items = 11693
-Number of ratings = 3578104
-Max rating = 1.0
-Min rating = 1.0
-Global mean = 1.0
----
-Test data:
-Number of users = 18827
-Number of items = 11693
-Number of ratings = 1985817
-Number of unknown users = 0
-Number of unknown items = 0
----
-Total users = 18827
-Total items = 11693
-Processing Users: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 15342/15342 [09:36<00:00, 26.62user/s]
-correct_pairs: 30656806
-total_pairs: 55314390
-AUC Score: 0.5542
-Total users evaluated:15342
