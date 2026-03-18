@@ -43,7 +43,7 @@ class WordVecs:
 
 # ---------------------------------------
 # For Eb_Nerd,  FastText Danish vector (300-dimensional)
-input_folder = './ ebnerd _input'
+input_folder = './ebnerd_input'
 model_path =  os.path.join(input_folder,'cc.da.300.bin') # Adjust this path to your actual file location
 model = FastText.load_fasttext_format(model_path)
 
