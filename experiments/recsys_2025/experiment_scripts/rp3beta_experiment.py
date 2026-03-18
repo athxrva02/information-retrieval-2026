@@ -27,7 +27,7 @@ dataset_name = 'nemig'
 input_path = f'./{dataset_name}_results'
 # Update the path for different dataset.
 # input_path = './mind_results'
-# input_path = './ebnerd_results'
+# input_path = './ebnerd_results_existing'
 
 ## We used TopN = 3
 TopN = 3

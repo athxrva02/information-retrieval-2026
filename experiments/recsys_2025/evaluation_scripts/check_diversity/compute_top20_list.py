@@ -25,7 +25,7 @@ print(f"save_path:{save_path}")
 with open(file_path, 'rb') as file:
     model_recommendations = pickle.load(file)
 
-results_dir = './ebnerd_results'
+results_dir = './ebnerd_results_existing'
 
 impression_items_df = pd.read_csv(
     os.path.join(results_dir, "article_pool.csv"), dtype ={'iid': str})

@@ -27,7 +27,7 @@ dataset_name = 'nemig'
 input_path = f'./{dataset_name}_results'
 # Update the path for different dataset.
 # input_path = './mind_results'
-# input_path = './ebnerd_results'
+# input_path = './ebnerd_results_existing'
 
 # Read path where you saved article_pool items (raw ids) into a csv file, with a column named iid.
 article_pool_path = os.path.join(input_path, "article_pool.csv")

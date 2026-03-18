@@ -29,7 +29,7 @@ def main():
     input_path = f'./{dataset_name}_results'
     # Update the path for different dataset.
     # input_path = './mind_results'
-    # input_path = './ebnerd_results'
+    # input_path = './ebnerd_results_existing'
 
     train_uir_path = os.path.join(input_path, 'uir_impression_train.csv')
     feedback_train = mind.load_feedback(fpath = train_uir_path)

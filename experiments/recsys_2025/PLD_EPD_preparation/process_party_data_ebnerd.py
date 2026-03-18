@@ -19,7 +19,7 @@ opp_parties = {
     "The Alternative"
 }
 
-dataset_result_path = './ebnerd_results'
+dataset_result_path = './ebnerd_results_existing'
 
 input_file_path = os.path.join(dataset_result_path, "party.json")
 

@@ -47,6 +47,27 @@ Once this has been done, navigate back to the root directory and install the dep
 
 Following these steps should be sufficient to set up the environment.
 
+### macOS (Apple Silicon) Notes
+
+On macOS with Apple clang 17+, the bundled Eigen library in Cornac fails to compile. Before installing Cornac, apply the
+following patch to `Recommenders/cornac/utils/external/eigen/Eigen/src/Core/Transpositions.h` (line 387):
+
+```diff
+-      return Product<OtherDerived, Transpose, AliasFreeProduct>(matrix.derived(), trt.derived());
++      return Product<OtherDerived, Transpose, AliasFreeProduct>(matrix.derived(), trt);
+```
+
+Additionally, Python 3.10 is recommended. Python 3.14 triggers the same Eigen compilation error regardless of the patch.
+If you don't have Python 3.10 installed, you can install it via Homebrew:
+```
+brew install python@3.10
+```
+
+Then create the virtual environment with:
+```
+/opt/homebrew/bin/python3.10 -m venv venv
+```
+
 
 ## Datasets
 

@@ -18,10 +18,10 @@ from cornac.models import D_RDW
 def main():
     dataset_name = 'ebnerd'
     
-    input_path = f'./{dataset_name}_results'
+    input_path = f'./{dataset_name}_results_existing'
     # Update the path for different dataset.
     # input_path = './mind_results'
-    # input_path = './ebnerd_results'
+    # input_path = './ebnerd_results_existing'
 
     ## We used TopN = 3
     TopN = 3
@@ -138,6 +138,15 @@ def main():
         pd.Series(Item_category).to_frame('category')
         .join(pd.Series(Item_entities).to_frame('entities'), how='outer')
         .join(pd.Series(Item_sentiment).to_frame('sentiment'), how='outer')
+    )
+
+    # Fill missing items (cold-start/augmented items not in enrichment JSONs) with defaults
+    all_item_indices = pd.RangeIndex(len(rs.global_iid_map))
+    article_feature_dataframe = article_feature_dataframe.reindex(all_item_indices)
+    article_feature_dataframe['category'] = article_feature_dataframe['category'].fillna('unknown')
+    article_feature_dataframe['sentiment'] = article_feature_dataframe['sentiment'].fillna(0.0)
+    article_feature_dataframe['entities'] = article_feature_dataframe['entities'].apply(
+        lambda x: x if isinstance(x, dict) else {}
     )
 
     # Set up the D-RDW model

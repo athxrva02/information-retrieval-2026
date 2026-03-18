@@ -106,7 +106,8 @@ class WikidataQuery:
             language_tags = ['en']
 
         language_filter = ' || '.join(f'LANGMATCHES(LANG(?ideology), "{lang}")' for lang in language_tags)
-        label_queries = ' UNION '.join(f'{{ ?s rdfs:label "{label}"@{lang} }}' for lang in language_tags)
+        escaped_label = label.replace('"', '\\"')
+        label_queries = ' UNION '.join(f'{{ ?s rdfs:label "{escaped_label}"@{lang} }}' for lang in language_tags)
         query = f"""
         SELECT DISTINCT ?ideology WHERE {{
             {label_queries}
@@ -165,7 +166,7 @@ class WikidataQuery:
 
         query = f"""
         SELECT DISTINCT ?s ?givenname ?familyname ?occupations ?party ?position ?gender ?citizen ?ethnicity ?place_of_birth ?sexuality WHERE {{
-            ?s ?label '{label}'@{language_tag} .
+            ?s ?label '{label.replace("'", "\\'")}'@{language_tag} .
             {''.join(optional_clauses)}
         }}
         """
