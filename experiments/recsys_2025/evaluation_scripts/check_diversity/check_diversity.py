@@ -14,30 +14,31 @@ from tqdm.auto import tqdm
 from collections import OrderedDict
 from collections import defaultdict
 
-save_path = "your_folder_to_save_model_recommendation_results"   #'./experiment_{dataset_name}_drdw_results/{model_name}
-datasetname = "nemig" # change datasetname here
+datasetname = "ebnerd" # change datasetname here
+data_path = f"./{datasetname}_results_existing"
+save_path = f"./experiment_{datasetname}_drdw_results/D_RDW"
 print(f"save_path:{save_path}")
-file_path = os.path.join(save_path, "top20_recommendation.pkl")
+file_path = os.path.join(save_path, "recommendations.pkl")
 
 with open(file_path, 'rb') as file:
     model_recommendations = pickle.load(file)
 
 impression_items_df = pd.read_csv(
-    "article_pool.csv", dtype ={'iid': str})
+    os.path.join(data_path, "article_pool.csv"), dtype ={'iid': str})
 impression_iid_list = impression_items_df['iid'].tolist()
 # Get the length of recommendation list for each user
 recommendation_lengths = [len(recs) for recs in model_recommendations.values()]
 
-with open('combined_user_history.json', 'r') as file:
+with open(os.path.join(data_path, 'combined_user_history.json'), 'r') as file:
     user_item_history = json.load(file)
 
 # Read path where the train uir and test uir are saved. For different models, the input files may be different
 ## Check the corresponding model experiment script.
 feedback_train = mind.load_feedback(
-    fpath="uir_impression_train.csv")
+    fpath=os.path.join(data_path, "augmented_uir_top3similar.csv"))
 
 feedback_test = mind.load_feedback(
-    fpath="uir_impression_test.csv")
+    fpath=os.path.join(data_path, "uir_impression_test.csv"))
 
 mind_ratio_split = BaseMethod.from_splits(
     train_data=feedback_train,
@@ -85,14 +86,14 @@ positive_ratings = get_user_rated_items(mind_ratio_split.test_set)
 negative_ratings = get_user_unclicked_items(mind_ratio_split.test_set)
 
 # Load item feature
-sentiment = mind.load_sentiment(fpath=f"./{datasetname}_results/sentiment.json")
-category = mind.load_category(fpath=f"./{datasetname}_results/category.json")
-complexity = mind.load_complexity(fpath=f"./{datasetname}_results/readability.json")
-genre = mind.load_category_multi(fpath=f"./{datasetname}_results/category.json")
+sentiment = mind.load_sentiment(fpath=os.path.join(data_path, "sentiment.json"))
+category = mind.load_category(fpath=os.path.join(data_path, "category.json"))
+complexity = mind.load_complexity(fpath=os.path.join(data_path, "readability.json"))
+genre = mind.load_category_multi(fpath=os.path.join(data_path, "category.json"))
 
-min_maj = mind.load_min_maj(fpath=f"./{datasetname}_results/min_maj_ratio.json")
-sentiment_one_hot_encoded_vectors = mind.load_encoding_vectors(fpath=f"./{datasetname}_results/sentiment_vectors.json") # sentiment one-hot vectors by range
-party_one_one_hot_encoded_vectors = mind.load_encoding_vectors(fpath=f"./{datasetname}_results/party_vectors.json")# party one-hot vectors by party classification
+min_maj = mind.load_min_maj(fpath=os.path.join(data_path, "min_maj_ratio.json"))
+sentiment_one_hot_encoded_vectors = mind.load_encoding_vectors(fpath=os.path.join(data_path, "sentiment_vectors.json")) # sentiment one-hot vectors by range
+party_one_one_hot_encoded_vectors = mind.load_encoding_vectors(fpath=os.path.join(data_path, "party_vectors.json")) # party one-hot vectors by party classification
 Item_sentiment = mind.build(data=sentiment, id_map=mind_ratio_split.global_iid_map)
 Item_category = mind.build(data=category, id_map=mind_ratio_split.global_iid_map)
 Item_complexity = mind.build(data=complexity, id_map=mind_ratio_split.global_iid_map)

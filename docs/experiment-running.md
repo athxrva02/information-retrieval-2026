@@ -339,3 +339,47 @@ If you see slow downloads or 429 errors during enrichment, set a HuggingFace tok
 ```bash
 export HF_TOKEN=your_token_here
 ```
+
+
+
+# Test 1
+[D_RDW] Evaluation started!
+Ranking: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 15342/15342 [1:17:28<00:00,  3.30it/s]
+Recommendations saved to ./experiment_ebnerd_drdw_results/D_RDW/recommendations.pkl
+Item scores saved to ./experiment_ebnerd_drdw_results/D_RDW/item_scores.pkl
+Item scores mapped index saved to ./experiment_ebnerd_drdw_results/D_RDW/item_scores_mapped_indices.pkl
+
+TEST:
+...
+      | Recall@20 | Train (s) |  Test (s)
+----- + --------- + --------- + ---------
+D_RDW |    0.0056 |    1.7707 | 4648.4456
+
+
+(venv) atharva@Atharvas-Mac-mini information-retrieval-2026 % python experiments/recsys_2025/evaluation_scripts/check_accuracy/compute_auc.py
+
+rating_threshold = 0.5
+exclude_unknowns = False
+---
+Training data:
+Number of users = 18827
+Number of items = 11693
+Number of ratings = 3578104
+Max rating = 1.0
+Min rating = 1.0
+Global mean = 1.0
+---
+Test data:
+Number of users = 18827
+Number of items = 11693
+Number of ratings = 1985817
+Number of unknown users = 0
+Number of unknown items = 0
+---
+Total users = 18827
+Total items = 11693
+Processing Users: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 15342/15342 [09:36<00:00, 26.62user/s]
+correct_pairs: 30656806
+total_pairs: 55314390
+AUC Score: 0.5542
+Total users evaluated:15342

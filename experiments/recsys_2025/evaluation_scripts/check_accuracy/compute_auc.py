@@ -16,18 +16,14 @@ from collections import defaultdict
 from tqdm import tqdm
 
 
-save_path = "your_folder_to_save_model_recommendation_results"   #'./experiment_{dataset_name}_drdw_results/{model_name}
+dataset_name = 'ebnerd'
+input_path = f'./{dataset_name}_results_existing'
 
-file_path = os.path.join(save_path, "item_scores.pkl")  
+save_path = f"./experiment_{dataset_name}_drdw_results/D_RDW"
+
+file_path = os.path.join(save_path, "item_scores.pkl")
 with open(file_path, 'rb') as file:
     item_scores = pickle.load(file)
-
-dataset_name = 'nemig'
-
-input_path = f'./{dataset_name}_results'
-# Update the path for different dataset.
-# input_path = './mind_results'
-# input_path = './ebnerd_results_existing'
 
 # Read path where you saved article_pool items (raw ids) into a csv file, with a column named iid.
 article_pool_path = os.path.join(input_path, "article_pool.csv")
@@ -36,7 +32,7 @@ impression_iid_list = impression_items_df['iid'].tolist()
 
 # Read path where the train uir and test uir are saved. For different models, the input files may be different
 # Check the corresponding model experiment script.
-train_uir_path = os.path.join(input_path, 'uir_impression_train.csv')
+train_uir_path = os.path.join(input_path, 'augmented_uir_top3similar.csv')
 feedback_train = mind.load_feedback(fpath = train_uir_path)
 
 test_uir_path = os.path.join(input_path, 'uir_impression_test.csv')

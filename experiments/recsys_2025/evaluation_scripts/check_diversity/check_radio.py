@@ -19,27 +19,28 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 
-datasetname = "nemig" # change datasetname here
+datasetname = "ebnerd" # change datasetname here
+data_path = f"./{datasetname}_results_existing"
 
-save_path = "your_folder_to_save_model_recommendation_results"   #'./experiment_{dataset_name}_drdw_results/{model_name}
+save_path = f"./experiment_{datasetname}_drdw_results/D_RDW"
 
-file_path = os.path.join(save_path, "top20_recommendation.pkl")
+file_path = os.path.join(save_path, "recommendations.pkl")
 
 with open(file_path, 'rb') as file:
     top20_recommendations = pickle.load(file)
 
 # Load user history
-with open('.combined_user_history.json', 'r') as file:
+with open(os.path.join(data_path, 'combined_user_history.json'), 'r') as file:
     user_item_history = json.load(file)
 
 # Read path where the train uir and test uir are saved. For different models, the input files may be different
 ## Check the corresponding model experiment script.
 
 feedback_train = mind.load_feedback(
-    fpath="uir_impression_train.csv")
+    fpath=os.path.join(data_path, "augmented_uir_top3similar.csv"))
 
 feedback_test = mind.load_feedback(
-    fpath="uir_impression_test.csv")
+    fpath=os.path.join(data_path, "uir_impression_test.csv"))
 
 mind_ratio_split = BaseMethod.from_splits(
     train_data=feedback_train,
@@ -88,14 +89,14 @@ negative_ratings = get_user_unclicked_items(mind_ratio_split.test_set)
 
 # Load item features
 ## Update the feature path
-sentiment = mind.load_sentiment(fpath=f"./{datasetname}_results/sentiment.json")
-category = mind.load_category(fpath=f"./{datasetname}_results/category.json")
-complexity = mind.load_complexity(fpath=f"./{datasetname}_results/readability.json")
-story = mind.load_story(fpath=f"./{datasetname}_results/story.json")
-genre = mind.load_category_multi(fpath=f"./{datasetname}_results/category.json")
-entities = mind.load_entities(fpath=f"./{datasetname}_results/party.json")
-min_maj = mind.load_min_maj(fpath=f"./{datasetname}_results/min_maj_ratio.json")
-entities_binary_count = mind.load_entities(fpath= f"./{datasetname}_results/entities_binary_count.json")
+sentiment = mind.load_sentiment(fpath=os.path.join(data_path, "sentiment.json"))
+category = mind.load_category(fpath=os.path.join(data_path, "category.json"))
+complexity = mind.load_complexity(fpath=os.path.join(data_path, "readability.json"))
+story = mind.load_story(fpath=os.path.join(data_path, "story.json"))
+genre = mind.load_category_multi(fpath=os.path.join(data_path, "category.json"))
+entities = mind.load_entities(fpath=os.path.join(data_path, "party.json"))
+min_maj = mind.load_min_maj(fpath=os.path.join(data_path, "min_maj_ratio.json"))
+entities_binary_count = mind.load_entities(fpath=os.path.join(data_path, "entities_binary_count.json"))
 targetSize = 20
 
 act = Activation(item_sentiment=sentiment, divergence_type='JS', k=targetSize)
