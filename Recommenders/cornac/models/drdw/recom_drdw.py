@@ -347,7 +347,20 @@ class D_RDW(Recommender):
         ranked_items, ranked_item_scores = self.sampleRank.performSampling(
             user_idx, self.targetSize,  self.diversity_dimension, selectedTarget, self.maxHops,  self.filteringCriteria, self.sampleObjective, self.rankingType,  self.rankingObjectives, self.mappingList, self.ascending, given_item_pool=item_indices)
 
+        # Build score vector over all impression items.
+        # Ranked items get a boosted score (base RDW + rank bonus) so they
+        # score higher than unranked items, preserving the NTD-aware ordering.
+        raw_rdw = self.sampleRank.articleRdwScore[item_indices]
+        item_scores = np.array(raw_rdw, dtype=np.float64)
 
-        random_walk_prob = self.sampleRank.articleRdwScore[item_indices]
-        return ranked_items, random_walk_prob
+        if len(ranked_items) > 0:
+            max_rdw = np.max(item_scores) if np.max(item_scores) > 0 else 1.0
+            for rank_pos, item_idx in enumerate(ranked_items):
+                if item_idx in item_indices:
+                    pos_in_list = list(item_indices).index(item_idx)
+                    # Higher rank → higher bonus (rank 0 = best)
+                    rank_bonus = max_rdw * (len(ranked_items) - rank_pos) / len(ranked_items)
+                    item_scores[pos_in_list] = raw_rdw[pos_in_list] + rank_bonus
+
+        return ranked_items, item_scores
     

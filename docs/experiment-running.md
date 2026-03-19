@@ -307,7 +307,9 @@ python experiments/recsys_2025/evaluation_scripts/check_accuracy/compute_auc.py
 
 ---
 
-## 6. Baseline Results (Paper Default NTD)
+## 6. Results 
+
+### 6.1 Baseline Performance (Paper Default NTD)
 
 Results from running D-RDW with the default paper NTD on EB-NeRD small.
 
@@ -336,6 +338,49 @@ experiment_ebnerd_drdw_results/
     ├── item_scores.pkl              # user_id → item scores
     └── item_scores_mapped_indices.pkl
 ```
+
+### 6.2 Modified NTD: `natural_aligned_rdw_5hops`
+
+Results from running D-RDW with the `natural_aligned_rdw_5hops` config on EB-NeRD small.
+This config combines: natural-aligned NTD (matching actual data distribution), `rdw_score`
+ranking (instead of `graph_coloring`), and 5 hops (larger candidate pool).
+
+### Config
+
+| Parameter | Value |
+|-----------|-------|
+| Sentiment | 0.10 / 0.45 / 0.35 / 0.10 (skewed towards neutral) |
+| Parties | gov 0.07, opp 0.05, composition 0.05, minority 0.18, no parties 0.65 |
+| `rankingType` | `rdw_score` |
+| `maxHops` | 5 |
+
+### Metrics
+
+| Metric | Value | vs Baseline |
+|--------|-------|-------------|
+| AUC | 0.5479 | -0.0063 (worse) |
+| Total users | 15,342 | — |
+| Correct/Total pairs | 30,308,499 / 55,314,390 | — |
+
+### Output Files
+
+```
+experiment_results/natural_aligned_rdw_5hops/
+├── ntd_config.json
+└── D_RDW/
+    ├── recommendations.pkl
+    ├── item_scores.pkl
+    ├── item_scores_mapped_indices.pkl
+    └── auc_results.json
+```
+
+### Analysis
+
+The natural-aligned NTD performed slightly **worse** than the paper default (0.5479 vs 0.5542).
+This is consistent with the empirical NTD analysis (see `analyze_optimal_ntd.py`), which found
+that sentiment and party distributions have near-zero discriminative power between positive and
+negative test items (differences < 1.2%). The NTD dimensions simply don't predict user clicks,
+so changing the NTD cannot meaningfully improve AUC.
 
 ---
 
