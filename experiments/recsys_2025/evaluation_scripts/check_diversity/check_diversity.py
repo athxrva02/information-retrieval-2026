@@ -1,10 +1,25 @@
+"""
+check_diversity.py — Compute ILD and Gini diversity metrics for D-RDW recommendations.
+
+Usage:
+    # Default (paper_default config):
+    python check_diversity.py
+
+    # Specific config from experiment_results/:
+    python check_diversity.py --config optimal_oracle_pure
+
+    # Custom paths:
+    python check_diversity.py --results-dir ./experiment_results --config optimal_oracle_pure
+    python check_diversity.py --save-path ./experiment_ebnerd_drdw_results/D_RDW
+"""
+
 import logging, os
 import pickle
 import numpy as np
 import random
 import sys
 import json
-import matplotlib.pyplot as plt
+import argparse
 import pandas as pd
 from cornac.eval_methods import RatioSplit
 from cornac.eval_methods.base_method import BaseMethod
@@ -14,9 +29,27 @@ from tqdm.auto import tqdm
 from collections import OrderedDict
 from collections import defaultdict
 
-datasetname = "ebnerd" # change datasetname here
-data_path = f"./{datasetname}_results_existing"
-save_path = f"./experiment_{datasetname}_drdw_results/D_RDW"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", "..", ".."))
+
+parser = argparse.ArgumentParser(description="Compute ILD and Gini diversity metrics")
+parser.add_argument("--data-dir", default=os.path.join(REPO_ROOT, "ebnerd_results_existing"),
+                    help="Path to preprocessed data (default: <repo>/ebnerd_results_existing)")
+parser.add_argument("--config", type=str, default=None,
+                    help="Config name in experiment_results/ (e.g. optimal_oracle_pure)")
+parser.add_argument("--results-dir", default=os.path.join(REPO_ROOT, "experiment_results"),
+                    help="Base experiment results directory (used with --config)")
+parser.add_argument("--save-path", type=str, default=None,
+                    help="Direct path to D_RDW results dir (overrides --config)")
+args = parser.parse_args()
+
+data_path = args.data_dir
+if args.save_path:
+    save_path = args.save_path
+elif args.config:
+    save_path = os.path.join(args.results_dir, args.config, "D_RDW")
+else:
+    save_path = os.path.join(REPO_ROOT, "experiment_ebnerd_drdw_results", "D_RDW")
 print(f"save_path:{save_path}")
 file_path = os.path.join(save_path, "recommendations.pkl")
 
