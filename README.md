@@ -68,6 +68,9 @@ Then create the virtual environment with:
 /opt/homebrew/bin/python3.10 -m venv venv
 ```
 
+### Accuracy Metrics
+
+Refer to [Accuracy Metrics README](./experiments/recsys_2025/evaluation_scripts/check_accuracy/Accuracy_Metrics_README.md) for more information about the metrics used and how to compute them.
 
 ## Datasets
 

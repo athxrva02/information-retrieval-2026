@@ -62,12 +62,16 @@ ebnerd_results_existing/uir_impression_test.csv
 
 ---
 
-## `run_accuracy_metrics.py` — usage
+## Run Accuracy Metrics
+
+Navigate to the `check_accuracy` directory
+
+```bash
+cd experiments/recsys_2025/evaluation_scripts/check_accuracy
+```
 
 ### Mode A (default) — single config
 ```bash
-cd experiments/recsys_2025/evaluation_scripts/check_accuracy
-
 python run_accuracy_metrics.py natural_aligned_rdw_5hops
 # → saves: experiment_results/natural_aligned_rdw_5hops/D_RDW/all_accuracy_metrics.json
 ```
