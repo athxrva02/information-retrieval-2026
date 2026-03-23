@@ -1,6 +1,6 @@
 import json
 
-with open("party.json", "r") as f:
+with open("./ebnerd_results_existing/party.json", "r") as f:
     party_raw_data = json.load(f)
     print(party_raw_data)
 
@@ -13,5 +13,5 @@ for article_id, parties in party_raw_data.items():
         new_dict[article_id] = {party: 1 for party in parties}
 
 print(json.dumps(new_dict, indent=4))
-with open("entities_binary_count.json", "w") as f:
+with open("./ebnerd_results_existing/entities_binary_count.json", "w") as f:
     json.dump(new_dict, f)

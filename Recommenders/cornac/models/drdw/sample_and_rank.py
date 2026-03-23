@@ -220,6 +220,7 @@ class Sample_And_Rank(object):
         rankedArticles = []
 
         if rankingType == "rdw_score":
+            candidateItems = np.asarray(candidateItems)
             rdwScore = self.articleRdwScore[candidateItems]
             # Sort descending and take top targetSize
             indices = np.argsort(rdwScore)[::-1][:targetSize]

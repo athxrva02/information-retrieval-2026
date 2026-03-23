@@ -259,7 +259,7 @@ def enhance_data(input_file_path, output_file_path):
     """
     df = pd.read_csv(input_file_path)
     columns_to_save = ['id']
-    df = df[:10] #for test
+    # df = df[:10] #for test
 
     # Add Category
     if config.attributes['category']['enrich']:

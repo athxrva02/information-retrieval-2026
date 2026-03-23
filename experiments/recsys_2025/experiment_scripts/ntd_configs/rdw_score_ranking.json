@@ -1,0 +1,22 @@
+{
+  "name": "rdw_score_ranking",
+  "description": "Same NTD as paper but rankingType=rdw_score instead of graph_coloring — tests ranking method impact on AUC",
+  "target_distribution": {
+    "sentiment": {"type": "continuous", "distr": [
+      {"min": -1, "max": -0.5, "prob": 0.2},
+      {"min": -0.5, "max": 0, "prob": 0.3},
+      {"min": 0, "max": 0.5, "prob": 0.3},
+      {"min": 0.5, "max": 1.01, "prob": 0.2}
+    ]},
+    "entities": {"type": "parties", "distr": [
+      {"description": "only mention", "contain": ["Social Democrats", "Venstre", "Moderate Party", "Union Party", "Social Democratic Party", "Inuit Ataqatigiit", "Naleraq"], "prob": 0.15},
+      {"description": "only mention", "contain": ["Denmark Democrats - Inger Støjberg", "Green Left", "Liberal Alliance", "Conservative People's Party", "Conservative Party", "Red–Green Alliance", "Danish People's Party", "Danish Social Liberal Party", "The Alternative"], "prob": 0.15},
+      {"description": "composition", "contain": [["Social Democrats", "Venstre", "Moderate Party", "Union Party", "Social Democratic Party", "Inuit Ataqatigiit", "Naleraq"], ["Denmark Democrats - Inger Støjberg", "Green Left", "Liberal Alliance", "Conservative People's Party", "Conservative Party", "Red–Green Alliance", "Danish People's Party", "Danish Social Liberal Party", "The Alternative"]], "prob": 0.15},
+      {"description": "minority but can also mention", "contain": ["Social Democrats", "Venstre", "Moderate Party", "Union Party", "Social Democratic Party", "Inuit Ataqatigiit", "Naleraq", "Denmark Democrats - Inger Støjberg", "Green Left", "Liberal Alliance", "Conservative People's Party", "Conservative Party", "Red–Green Alliance", "Danish People's Party", "Danish Social Liberal Party", "The Alternative"], "prob": 0.15},
+      {"description": "no parties", "contain": [], "prob": 0.4}
+    ]}
+  },
+  "model_params": {
+    "rankingType": "rdw_score"
+  }
+}

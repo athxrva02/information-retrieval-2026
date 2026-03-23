@@ -12,7 +12,7 @@ import sys
 
 
 # For Mind and NeMig datasets, update the path to the corresponding {datasetname_results} folder
-dataset_result_folder =  './ebnerd_results'
+dataset_result_folder =  './ebnerd_results_existing'
 # Load precomputed embeddings for Mind and NeMig datasets
 # saved_emb_path = os.path.join(dataset_result_folder,  "news_embeddings.pkl")
 # with open(saved_emb_path, "rb") as f:

@@ -17,7 +17,7 @@ opp_parties = {
 }
 
 # Load from a JSON file
-with open('party.json', 'r') as f:
+with open('./ebnerd_results_existing/party.json', 'r') as f:
     article_parties = json.load(f)
 
 def normalize(party_name):
@@ -84,7 +84,7 @@ article_to_onehot = df.set_index('article_id')['one_hot'].to_dict()
 # Done!
 print(article_to_onehot)
 
-with open("party_vectors.json", "w") as f:
+with open("./ebnerd_results_existing/party_vectors.json", "w") as f:
     json.dump(article_to_onehot, f)
 
 print("Saved to party_vectors.json")
