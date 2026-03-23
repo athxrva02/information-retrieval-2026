@@ -18,10 +18,10 @@ from cornac.models import D_RDW
 def main():
     dataset_name = 'ebnerd'
     
-    input_path = f'./{dataset_name}_results'
+    input_path = f'./{dataset_name}_results_existing'
     # Update the path for different dataset.
     # input_path = './mind_results'
-    # input_path = './ebnerd_results'
+    # input_path = './ebnerd_results_existing'
 
     ## We used TopN = 3
     TopN = 3

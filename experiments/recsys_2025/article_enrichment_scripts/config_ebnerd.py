@@ -1,6 +1,6 @@
 # Configuration settings for data enhancement pipeline
 import os
-dataset_result_path = './ebnerd_results'
+dataset_result_path = './ebnerd_results_existing'
 
 input_file_path = os.path.join(dataset_result_path, 'cleaned_articles.csv')  # input path must be a csv file
 output_file_path = dataset_result_path   # output path must be a directory to put all json files

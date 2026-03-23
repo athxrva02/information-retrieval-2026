@@ -97,7 +97,7 @@ new_df = articles_df.rename(columns={
 print(new_df.head())
 print(f"len cleaned EB_Nerd articles: {len(new_df)}")
 
-output_folder = './ebnerd_results'
+output_folder = './ebnerd_results_existing'
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)

@@ -22,7 +22,7 @@ val_behaviors_df = pd.read_parquet(val_behaviors_path)
 val_history_df = pd.read_parquet(val_history_path)
 
 
-dataset_result_folder =  './ebnerd_results'
+dataset_result_folder =  './ebnerd_results_existing'
 incompelete_article_path = os.path.join(dataset_result_folder, "incomplete_article_ids.txt")
 with open(incompelete_article_path, "r") as file:
     incomplete_ids = [line.strip() for line in file if line.strip()]

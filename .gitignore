@@ -1,8 +1,34 @@
 dataset
 *.parquet
 ebnerd_input
-ebnerd_results
+ebnerd_results_existing
 
 .venv
 .idea
 __pycache__
+# Data
+ebnerd_input/
+ebnerd_small/
+ebnerd_results/
+ebnerd_results_existing/
+FaceBookAI_xlm_roberta_base/
+experiment_ebnerd_drdw_results/
+
+# Virtual environment
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+*.so
+*.o
+build/
+dist/
+*.egg
+
+# OS
+.DS_Store
+
+# Temp files
+requirements_fixed.txt

@@ -70,7 +70,7 @@ def word_tokenize(sent):
     else:
         return []
 
-dataset_result_folder =  './ebnerd_results'
+dataset_result_folder =  './ebnerd_results_existing'
 incompelete_article_path = os.path.join(dataset_result_folder, "cleaned_articles.csv")
 df = pd.read_csv(incompelete_article_path, usecols=["id", "title"])
 article_title = dict(zip(df["id"], df["title"]))
