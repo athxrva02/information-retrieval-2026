@@ -1,5 +1,5 @@
 {
-  "name": "paper_default",
+  "name": "drdw_base_paper_config",
   "description": "Default NTD from the D-RDW paper (EB-NeRD)",
   "target_distribution": {
     "sentiment": {"type": "continuous", "distr": [
