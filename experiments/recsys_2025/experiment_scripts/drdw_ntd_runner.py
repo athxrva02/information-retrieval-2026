@@ -1,42 +1,17 @@
 """
 D-RDW NTD Experiment Runner
 ============================
-Run D-RDW with different Normative Target Distributions without re-training.
+Run D-RDW with different Normative Target Distributions.
 
 Usage:
     # Run a specific NTD config:
-    python drdw_ntd_runner.py --config configs/uniform_sentiment.json
+    python drdw_ntd_runner.py --config ntd_configs/uniform_sentiment.json
 
     # Run all configs in a directory:
-    python drdw_ntd_runner.py --config-dir configs/
+    python drdw_ntd_runner.py --config-dir ntd_configs/
 
-    # List available configs:
-    python drdw_ntd_runner.py --list-configs configs/
 
-NTD Config Format (JSON):
-    {
-        "name": "uniform_sentiment",
-        "description": "Equal probability across all sentiment bins",
-        "target_distribution": {
-            "sentiment": {"type": "continuous", "distr": [
-                {"min": -1, "max": 0, "prob": 0.5},
-                {"min": 0, "max": 1.01, "prob": 0.5}
-            ]},
-            "entities": {"type": "parties", "distr": [
-                {"description": "only mention", "contain": ["Social Democrats", "Venstre"], "prob": 0.15},
-                {"description": "no parties", "contain": [], "prob": 0.85}
-            ]}
-        },
-        "model_params": {
-            "maxHops": 3,
-            "targetSize": 20,
-            "rankingType": "graph_coloring",
-            "rankingObjectives": "category",
-            "sampleObjective": "rdw_score"
-        }
-    }
-
-    "model_params" is optional — defaults are used if omitted.
+For examples of the NTD config format, refer to the NTD configs folder
 
 Results are saved to: ./experiment_results/{config_name}/D_RDW/
 Each run also saves a copy of the config used, so results are always traceable.
