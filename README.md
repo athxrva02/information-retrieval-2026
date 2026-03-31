@@ -1,7 +1,7 @@
 # Information Retrieval 2026 - Group 36
 
-Reproduction and experimentation repository for [**D-RDW: Diversity-Driven Random Walks for News Recommender Systems**](https://dl.acm.org/doi/10.1145/3705328.3748016), 
-presented at RecSys 2025 (Li, Heitz, Inel, Bernstein — University of Zurich).
+This is the reproduction and experimentation repository for [**D-RDW: Diversity-Driven Random Walks for News Recommender Systems**](https://dl.acm.org/doi/10.1145/3705328.3748016),
+used for our group project for the Information Retrieval course in 2026.
 
 The code in this repository is based on the code developed for the original D-RDW algorithm, which can be found at the
 [Informfully/Experiments](https://github.com/Informfully/Experiments/tree/main) and [Informfully/Recommenders](https://github.com/Informfully/Recommenders/tree/main#)
@@ -9,25 +9,36 @@ repos.
 
 ## What is D-RDW?
 
-D-RDW is a lightweight, diversity-aware news recommender that utilizes random walks on a user-item bipartite graph. 
+D-RDW is a diversity-aware news recommender that utilizes random walks on a user-item bipartite graph. 
 Unlike neural models that treat diversity as a post-processing afterthought, D-RDW enforces a **Normative Target 
 Distribution (NTD)** of article properties (sentiment, political party mentions, category) during the recommendation 
 step itself.
 
 The pipeline has three stages:
 
-1. **Pre-processing** — Build a bipartite graph from user-item interactions; augment it with new/cold items using 
-semantic similarity (via [`all-mpnet-base-v2`](https://huggingface.co/sentence-transformers/all-mpnet-base-v2)).
-2. **In-processing** — Run random walks (3 hops), apply heuristic filters, then sample a candidate list that satisfies 
+1. Pre-processing: Build a bipartite graph from user-item interactions; augment it with new/cold items using 
+semantic similarity.
+2. In-processing: Run random walks (3 hops), apply heuristic filters, then sample a candidate list that satisfies 
 the NTD constraints using binary integer programming.
-3. **Post-processing** — Re-rank the candidate list by random walk score, multiple objectives, or graph coloring (for 
-homogeneous category display).
-
-**Key results (EB-NeRD, top-20 recommendations):** D-RDW ranks in the top 3 across all four evaluation dimensions — 
-normative RADio diversity, traditional Gini/ILD diversity, energy cost, and AUC — while being ~100× cheaper to run 
-than neural baselines.
+3. Post-processing: Re-rank the candidate list.
 
 ## Setup
+
+### Datasets
+
+This project uses the [EB-NeRD dataset](https://recsys.eb.dk/index.html). This project requires ebnerd_small 
+(iter-item interactions) and ebnerd_roberta_base (article embeddings). To set up the folder, create a directory called
+`ebnerd_input` in the root directory, containing 5 files:
+- `articles.parquet`: Contains the article data
+- `behaviors-train.parquet`: Contains the behaviors data from the train set
+- `behaviors-val.parquet`: Contains the behaviors data from the validation set
+- `history-train.parquet`: Contains the history data from the train set
+- `history-val.parquet`: Contains the history data from the validation set
+
+Once the dataset has been set up, data processing can be executed by following the instructions in the experiments 
+[README.md](experiments/recsys_2025/README.md).
+
+### Dependencies
 
 After cloning this repository, create a virtual environment in the root directory. For example by running:
 ```
@@ -45,7 +56,11 @@ uv pip install -e .
 
 Once this has been done, navigate back to the root directory and install the dependencies found in `requirements.txt`.
 
-Following these steps should be sufficient to set up the environment.
+### D-RDW Setup
+
+There are many files that need to be generated prior to running the D-RDW algorithm. Which files to run, and how to run them,
+is further explained in the [experiments README](./experiments/recsys_2025/README.md). Note that the code for running
+the D-RDW experiment itself is different from this README. More information on how to run the D-RDW experiment can be seen below.
 
 ### macOS (Apple Silicon) Notes
 
@@ -57,34 +72,40 @@ following patch to `Recommenders/cornac/utils/external/eigen/Eigen/src/Core/Tran
 +      return Product<OtherDerived, Transpose, AliasFreeProduct>(matrix.derived(), trt);
 ```
 
-Additionally, Python 3.10 is recommended. Python 3.14 triggers the same Eigen compilation error regardless of the patch.
-If you don't have Python 3.10 installed, you can install it via Homebrew:
+Python 3.10 is recommended. Python 3.14 triggers the same Eigen compilation error regardless of the patch.
+
+In addition, the file found at `Recommenders/cornac/augmentation/enrich_ne.py` differs depending on the OS. If
+using macOS, uncomment the code at lines `110` and `173`, and comment the indicated code below them.
+
+## Running D-RDW
+
+Our project involved running the D-RDW algorithm on different NTDs. First we ran `experiments/recsys_2025/experiment_scripts/analyze_optimal_ntd.py`
+to get different NTDs that might be useful to experiment with. More information on how these NTDs are calculated is in the project
+paper. Different NTD configurations can be found in the `experiments/recsys_2025/experiment_scripts/ntd_configs` directory. The
+NTDs that were used for our project paper can be found in `experiment_results`, each NTD having its own directory.
+
+Once the NTD configs are created, the D-RDW algorithm can be run on the NTD configs. The original repository used the `drdw_experiment.py`
+file in the `experiments/recsys_2025/experiment_scripts` directory. We modified the code to work with our NTD configs, resulting
+in the `drdw_ntd_runner.py` file in the same directory. To run D-RDW, run the `drdw_ntd_runner.py`, with the desired config
+as an argument. For example:
 ```
-brew install python@3.10
+# Run a specific NTD config:
+python drdw_ntd_runner.py --config ntd_configs/drdw_base_paper_config.json
 ```
 
-Then create the virtual environment with:
-```
-/opt/homebrew/bin/python3.10 -m venv venv
-```
+The results are then saved to `./experiment_results/{config_name}/D_RDW/`. These results can be used for running accuracy
+and diversity metrics.
 
-### Accuracy Metrics
+## Accuracy Metrics
 
-Refer to [Accuracy Metrics README](./experiments/recsys_2025/evaluation_scripts/check_accuracy/Accuracy_Metrics_README.md) for more information about the metrics used and how to compute them.
+Refer to the accuracy metrics [README](./experiments/recsys_2025/evaluation_scripts/check_accuracy/README) for more information 
+about the metrics used and how to compute them.
 
-## Datasets
+## Diversity Metrics
 
-This project uses the [EB-NeRD dataset](https://recsys.eb.dk/index.html). This project requires ebnerd_small 
-(iter-item interactions) and ebnerd_roberta_base (article embeddings). To set up the folder, create a directory called
-`ebnerd_input` in the root directory, containing 5 files:
-- `articles.parquet`: Contains the article data
-- `behaviors-train.parquet`: Contains the behaviors data from the train set
-- `behaviors-val.parquet`: Contains the behaviors data from the validation set
-- `history-train.parquet`: Contains the history data from the train set
-- `history-val.parquet`: Contains the history data from the validation set
-
-Once the dataset has been set up, data processing can be executed by following the instructions in the experiments 
-[README.md](experiments/recsys_2025/README.md).
+The diversity metrics code did not change from the original repository. Refer to the [experiments README](./experiments/recsys_2025/README.md)
+for more information on how to run the diversity metrics. Make sure that the paths in the file that is being run point to
+the correct model.
 
 ## Repository Structure
 
@@ -95,31 +116,18 @@ experiments/recsys_2025/
 ├── graph_preparation/            # Build augmented bipartite graphs for random walk models
 ├── PLD_EPD_preparation/          # Prepare data for PLD/EPD filtering baselines
 ├── experiment_scripts/           # Run models (one script per model)
-├── experiment_reranking_scripts/ # Apply re-ranking (MMR, GreedyKL, PM-2, DYN) to neural outputs
-├── evaluation_scripts/           # Compute AUC, Gini, ILD, RADio metrics
+├── experiment_reranking_scripts/ # Apply re-ranking to neural outputs
+├── evaluation_scripts/           # Compute accuracy and diversity metrics
 └── final_recommendations/        # Pre-computed top-20 recommendation lists
 
 Recommenders/                     # The Recommenders package - an extension of Cornac
 ```
 
-[//]: # (## Baselines Compared)
 
-[//]: # ()
-[//]: # (| Type | Models |)
-
-[//]: # (|------|--------|)
-
-[//]: # (| Neural | LSTUR, NPA, NRMS |)
-
-[//]: # (| Neural + re-ranking | + Greedy KL, PM-2, MMR, DYN-ATT, DYN-POS |)
-
-[//]: # (| Random walk | RP³β, RWE-D, D-RDW |)
-
-[//]: # (| Baseline | Random |)
 
 ## Key Links
 
-- [Informfully Recommenders](https://github.com/Informfully/Recommenders) — extended Cornac framework (required dependency)
+- [Informfully Recommenders](https://github.com/Informfully/Recommenders)
 - [D-RDW model source](https://github.com/Informfully/Recommenders/tree/main/cornac/models/drdw)
 - [Graph preparation guide](https://github.com/Informfully/Experiments/blob/main/experiments/recsys_2025/graph_preparation/README.md)
 - [EB-NeRD dataset](https://recsys.eb.dk/)

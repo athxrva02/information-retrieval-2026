@@ -106,8 +106,14 @@ class WikidataQuery:
             language_tags = ['en']
 
         language_filter = ' || '.join(f'LANGMATCHES(LANG(?ideology), "{lang}")' for lang in language_tags)
-        escaped_label = label.replace('"', '\\"')
-        label_queries = ' UNION '.join(f'{{ ?s rdfs:label "{escaped_label}"@{lang} }}' for lang in language_tags)
+
+        # Uncomment for MacOS
+        # escaped_label = label.replace('"', '\\"')
+        # label_queries = ' UNION '.join(f'{{ ?s rdfs:label "{escaped_label}"@{lang} }}' for lang in language_tags)
+
+        # Comment if not using Windows
+        label_queries = ' UNION '.join(f'{{ ?s rdfs:label "{label}"@{lang} }}' for lang in language_tags)
+
         query = f"""
         SELECT DISTINCT ?ideology WHERE {{
             {label_queries}
@@ -164,12 +170,22 @@ class WikidataQuery:
                 """
             optional_clauses.append(optional_clause)
 
+        # Uncomment if using MacOS
+        # query = f"""
+        # SELECT DISTINCT ?s ?givenname ?familyname ?occupations ?party ?position ?gender ?citizen ?ethnicity ?place_of_birth ?sexuality WHERE {{
+        #      ?s ?label '{label.replace("'", "\\'")}'@{language_tag} .
+        #     {''.join(optional_clauses)}
+        # }}
+        # """
+
+        # Comment if not using Windows
         query = f"""
-        SELECT DISTINCT ?s ?givenname ?familyname ?occupations ?party ?position ?gender ?citizen ?ethnicity ?place_of_birth ?sexuality WHERE {{
-            ?s ?label '{label.replace("'", "\\'")}'@{language_tag} .
-            {''.join(optional_clauses)}
-        }}
-        """
+                SELECT DISTINCT ?s ?givenname ?familyname ?occupations ?party ?position ?gender ?citizen ?ethnicity ?place_of_birth ?sexuality WHERE {{
+                     ?s ?label '{label}'@{language_tag} .
+                    {''.join(optional_clauses)}
+                }}
+                """
+
         response = self.execute_query(query)
         if response:
             try:
